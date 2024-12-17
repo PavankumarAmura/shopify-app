@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "2bcb3edd25cb8664aeee37bcb37aa524"
-application_url = "https://map-plant-obviously-panel.trycloudflare.com"
+application_url = "https://stroke-returns-priest-kilometers.trycloudflare.com"
 embedded = true
 name = "Order Print Amura"
 handle = "order-print-amura"
@@ -20,9 +20,9 @@ scopes = "read_products,read_orders,read_customers"
 
 [auth]
 redirect_urls = [
-  "https://map-plant-obviously-panel.trycloudflare.com/auth/callback",
-  "https://map-plant-obviously-panel.trycloudflare.com/auth/shopify/callback",
-  "https://map-plant-obviously-panel.trycloudflare.com/api/auth/callback"
+  "https://stroke-returns-priest-kilometers.trycloudflare.com/auth/callback",
+  "https://stroke-returns-priest-kilometers.trycloudflare.com/auth/shopify/callback",
+  "https://stroke-returns-priest-kilometers.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
