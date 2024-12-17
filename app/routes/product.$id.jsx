@@ -3,13 +3,7 @@ import {
   Layout,
   Text,
   Card,
-  Button,
-  BlockStack,
-  Thumbnail,
-  Box,
-  List,
-  Link,
-  InlineStack,
+  BlockStack
 } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
