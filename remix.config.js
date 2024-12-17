@@ -12,9 +12,12 @@ if (
 
 /** @type {import('@remix-run/dev').AppConfig} */
 module.exports = {
-  ignoredRouteFiles: ["**/.*"],
-  appDirectory: "app",
+  server: "./server.js",
+  serverBuildPath: "build/index.js",
   serverModuleFormat: "cjs",
-  dev: { port: process.env.HMR_SERVER_PORT || 8002 },
-  future: {},
+  serverDependenciesToBundle: "all",
+  future: {
+    unstable_dev: true,
+  },
+  adapters: [require("@remix-run/vercel").vercelAdapter()],
 };
