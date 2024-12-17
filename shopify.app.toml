@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "2bcb3edd25cb8664aeee37bcb37aa524"
-application_url = "https://representations-verde-louis-roads.trycloudflare.com"
+client_id = "0166778987d76b0e5c36d08e942b4d51"
+application_url = "https://shopify-app-flax-ten.vercel.app"
 embedded = true
 name = "Order Print Amura"
 handle = "order-print-amura"
@@ -20,9 +20,9 @@ scopes = "read_products,read_orders,read_customers"
 
 [auth]
 redirect_urls = [
-  "https://representations-verde-louis-roads.trycloudflare.com/auth/callback",
-  "https://representations-verde-louis-roads.trycloudflare.com/auth/shopify/callback",
-  "https://representations-verde-louis-roads.trycloudflare.com/api/auth/callback"
+  "https://shopify-app-flax-ten.vercel.app/auth/callback",
+  "https://shopify-app-flax-ten.vercel.app/auth/shopify/callback",
+  "https://shopify-app-flax-ten.vercel.app/api/auth/callback"
 ]
 
 [pos]
