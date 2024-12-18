@@ -5,11 +5,9 @@ import {
   Card,
   BlockStack
 } from "@shopify/polaris";
-import { authenticate } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({ params, request }) => {
-  //const { admin } = await authenticate.admin(request);
   const order_id = params.id;
   return order_id;
 };
@@ -27,7 +25,7 @@ export default function OrderDetail() {
         <Layout>
           <Layout.Section>
             <Card>
-            {order_id}
+            ${order_id}
             </Card>
           </Layout.Section>
         </Layout>

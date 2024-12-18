@@ -11,11 +11,10 @@
     },
     "routeIdToServerBundleId": {
       "routes/webhooks.app.uninstalled": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/product.$id": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/auth.login": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/orders.$id": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_index": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/auth.$": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/orders": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/app._index": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0"
     },
     "routes": {
@@ -34,20 +33,20 @@
           "runtime": "nodejs"
         }
       },
-      "routes/product.$id": {
-        "id": "routes/product.$id",
-        "parentId": "root",
-        "file": "app/routes/product.$id.jsx",
-        "path": "product/:id",
-        "config": {
-          "runtime": "nodejs"
-        }
-      },
       "routes/auth.login": {
         "id": "routes/auth.login",
         "parentId": "root",
         "file": "app/routes/auth.login/route.jsx",
         "path": "auth/login",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/orders.$id": {
+        "id": "routes/orders.$id",
+        "parentId": "root",
+        "file": "app/routes/orders.$id.jsx",
+        "path": "orders/:id",
         "config": {
           "runtime": "nodejs"
         }
@@ -66,15 +65,6 @@
         "parentId": "root",
         "file": "app/routes/auth.$.jsx",
         "path": "auth/*",
-        "config": {
-          "runtime": "nodejs"
-        }
-      },
-      "routes/orders": {
-        "id": "routes/orders",
-        "parentId": "root",
-        "file": "app/routes/orders.jsx",
-        "path": "orders",
         "config": {
           "runtime": "nodejs"
         }
@@ -124,17 +114,17 @@
         "file": "routes/webhooks.app.uninstalled.jsx",
         "path": "webhooks/app/uninstalled"
       },
-      "routes/product.$id": {
-        "id": "routes/product.$id",
-        "parentId": "root",
-        "file": "routes/product.$id.jsx",
-        "path": "product/:id"
-      },
       "routes/auth.login": {
         "id": "routes/auth.login",
         "parentId": "root",
         "file": "routes/auth.login/route.jsx",
         "path": "auth/login"
+      },
+      "routes/orders.$id": {
+        "id": "routes/orders.$id",
+        "parentId": "root",
+        "file": "routes/orders.$id.jsx",
+        "path": "orders/:id"
       },
       "routes/_index": {
         "id": "routes/_index",
@@ -147,12 +137,6 @@
         "parentId": "root",
         "file": "routes/auth.$.jsx",
         "path": "auth/*"
-      },
-      "routes/orders": {
-        "id": "routes/orders",
-        "parentId": "root",
-        "file": "routes/orders.jsx",
-        "path": "orders"
       },
       "routes/app": {
         "id": "routes/app",
