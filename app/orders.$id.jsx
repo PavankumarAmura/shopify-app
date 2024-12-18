@@ -1,16 +1,37 @@
+import {
+  Page,
+  Layout,
+  Text,
+  Card,
+  BlockStack
+} from "@shopify/polaris";
+import { authenticate } from "./shopify.server";
 import { useLoaderData } from "@remix-run/react";
 
-export const loader = async ({ params }) => {
-    const { order_id } = params;
-    return order_id;
+export const loader = async ({ params, request }) => {
+  const { admin } = await authenticate.admin(request);
+  const order_id = params.id;
+  return order_id;
 };
 
-export default function ProductPage() {
-    const order_id = useLoaderData();
+export default function OrderDetail() {
+  const order_id = useLoaderData();
 
-    return (
-        <div>
-            <h1>Order ID:- {order_id}</h1>
-        </div>
-    );
+  if (!order_id) {
+    return <SkeletonPage title="Loading..." />;
+  }
+
+  return (
+    <Page>
+      <BlockStack gap="500">
+        <Layout>
+          <Layout.Section>
+            <Card>
+            {order_id}
+            </Card>
+          </Layout.Section>
+        </Layout>
+      </BlockStack>
+    </Page>
+  );
 }
