@@ -51,6 +51,7 @@ export default function OrderDetail() {
   return (
     <div>
       <p>Order ID:- {order.id}</p>
+      <p>Order Number:- {order.name}</p>
       <p>Name:- {order.billing_address.name}</p>
       <p>Email:- {order.contact_email}</p>  
       <p>Total:- {order.subtotal_price}</p>

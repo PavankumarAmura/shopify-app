@@ -7,7 +7,7 @@ export const loader = async ({ request }) => {
   const response = await admin.graphql(
     `#graphql
     query {
-        orders(first: 10) {
+        orders(first: 20) {
             nodes {
                 name
                 id
