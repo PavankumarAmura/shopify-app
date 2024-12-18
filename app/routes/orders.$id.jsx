@@ -9,7 +9,7 @@ import { useLoaderData } from "@remix-run/react";
 import prisma from "../db.server";
 
 export const loader = async ({ params, request }) => {
-  let token
+  let accessToken;
   try {
     const session = await prisma.session.findFirst({
       where: {
@@ -20,7 +20,7 @@ export const loader = async ({ params, request }) => {
     if (!session || !session.accessToken) {
       throw new Error(`Access token not found for shop: ${shop}`);
     }
-    token = session.accessToken;
+    accessToken = session.accessToken;
   } catch (error) {
     console.error("Error fetching access token:", error);
     throw error;
@@ -28,14 +28,28 @@ export const loader = async ({ params, request }) => {
     await prisma.$disconnect();
   }
   const order_id = params.id;
-  console.log(order_id);
-  return token;
+  const url = `https://ga4-setup.myshopify.com/admin/api/2023-10/orders/${order_id}.json`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'X-Shopify-Access-Token': accessToken,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch order data: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.order;
 };
 
 export default function OrderDetail() {
-  const token = useLoaderData();
+  const order = useLoaderData();
 
-  if (!token) {
+  if (!order) {
     return <SkeletonPage title="Loading..." />;
   }
 
@@ -45,7 +59,7 @@ export default function OrderDetail() {
         <Layout>
           <Layout.Section>
             <Card>
-            ${token}
+            {order}
             </Card>
           </Layout.Section>
         </Layout>
