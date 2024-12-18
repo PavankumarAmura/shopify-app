@@ -6,16 +6,36 @@ import {
   BlockStack
 } from "@shopify/polaris";
 import { useLoaderData } from "@remix-run/react";
+import prisma from "../db.server";
 
 export const loader = async ({ params, request }) => {
+  let token
+  try {
+    const session = await prisma.session.findUnique({
+      where: {
+        shop: "ga4-setup.myshopify.com",
+      },
+    });
+
+    if (!session || !session.accessToken) {
+      throw new Error(`Access token not found for shop: ${shop}`);
+    }
+    token = session.accessToken;
+  } catch (error) {
+    console.error("Error fetching access token:", error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
   const order_id = params.id;
-  return order_id;
+  console.log(order_id);
+  return token;
 };
 
 export default function OrderDetail() {
-  const order_id = useLoaderData();
+  const token = useLoaderData();
 
-  if (!order_id) {
+  if (!token) {
     return <SkeletonPage title="Loading..." />;
   }
 
@@ -25,7 +45,7 @@ export default function OrderDetail() {
         <Layout>
           <Layout.Section>
             <Card>
-            ${order_id}
+            ${token}
             </Card>
           </Layout.Section>
         </Layout>
