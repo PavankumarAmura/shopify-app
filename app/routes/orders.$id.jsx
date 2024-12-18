@@ -11,7 +11,7 @@ import prisma from "../db.server";
 export const loader = async ({ params, request }) => {
   let token
   try {
-    const session = await prisma.session.findUnique({
+    const session = await prisma.session.findFirst({
       where: {
         shop: "ga4-setup.myshopify.com",
       },
