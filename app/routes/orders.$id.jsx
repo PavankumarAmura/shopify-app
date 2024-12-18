@@ -18,9 +18,10 @@ export const loader = async ({ params, request }) => {
     });
 
     if (!session || !session.accessToken) {
-      throw new Error(`Access token not found for shop: ${shop}`);
+      throw new Error(`Access token not found for shop: GA4`);
     }
     accessToken = session.accessToken;
+    console.log(accessToken);
   } catch (error) {
     console.error("Error fetching access token:", error);
     throw error;
@@ -43,6 +44,7 @@ export const loader = async ({ params, request }) => {
   }
 
   const data = await response.json();
+  console.log(data);
   return data.order;
 };
 
@@ -59,7 +61,7 @@ export default function OrderDetail() {
         <Layout>
           <Layout.Section>
             <Card>
-            {order}
+              Pavan
             </Card>
           </Layout.Section>
         </Layout>
