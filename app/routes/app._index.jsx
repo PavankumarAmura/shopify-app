@@ -1,10 +1,4 @@
-import {
-  Page,
-  Layout,
-  Card,
-  BlockStack,
-  Link,
-} from "@shopify/polaris";
+import { Page, Layout, Card, BlockStack, Link, Text } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 
@@ -13,19 +7,22 @@ export const loader = async ({ request }) => {
   const response = await admin.graphql(
     `#graphql
     query {
-      products(first: 10) {
-        edges {
-          node {
-            id,
-            title
-          }
+        orders(first: 10) {
+            nodes {
+                name
+                id
+                customer {
+                    addresses {
+                        name
+                    }
+                }
+            }
         }
-      }
     }`,
   );
 
   const data = await response.json();
-  return data.data.products.edges;
+  return data.data.orders.nodes || null;
 };
 
 export default function Index() {
@@ -37,10 +34,12 @@ export default function Index() {
           <Layout.Section>
             <div style={{ display: "grid", gap: "1rem" }}>
               {data.map((item, index) => {
-                const productId = item.node.id.split("/").pop();
+                const order_id = item.id.split("/").pop();
                 return (
                   <Card key={index}>
-                    <Link url={`/product/${productId}`}>{item.node.title}</Link>
+                    <Text>
+                      <Link url={`/orders/${order_id}`}>{item.name} - {item.customer.addresses[0].name}</Link>
+                    </Text>
                   </Card>
                 );
               })}
