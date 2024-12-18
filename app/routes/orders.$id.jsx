@@ -1,10 +1,3 @@
-import {
-  Page,
-  Layout,
-  Text,
-  Card,
-  BlockStack
-} from "@shopify/polaris";
 import { useLoaderData } from "@remix-run/react";
 import prisma from "../db.server";
 
@@ -56,16 +49,11 @@ export default function OrderDetail() {
   }
 
   return (
-    <Page>
-      <BlockStack gap="500">
-        <Layout>
-          <Layout.Section>
-            <Card>
-              Pavan
-            </Card>
-          </Layout.Section>
-        </Layout>
-      </BlockStack>
-    </Page>
+    <div>
+      <p>Order ID:- {order.id}</p>
+      <p>Name:- {order.billing_address.name}</p>
+      <p>Email:- {order.contact_email}</p>  
+      <p>Total:- {order.subtotal_price}</p>
+    </div>
   );
 }
