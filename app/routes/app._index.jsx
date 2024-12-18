@@ -38,7 +38,8 @@ export default function Index() {
                 return (
                   <Card key={index}>
                     <Text>
-                      <Link url={`/orders/${order_id}`}>{item.name} - {item.customer.addresses[0].name}</Link>
+                      <a href={`/orders/${order_id}`} target="_blank">{item.name} - {item.customer.addresses[0].name}</a>
+                      
                     </Text>
                   </Card>
                 );
