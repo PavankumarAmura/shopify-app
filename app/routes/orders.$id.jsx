@@ -154,6 +154,10 @@ export default function OrderDetail() {
     return res.total_price;
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   if (!res) {
     return <SkeletonPage title="Loading..." />;
   }
@@ -409,6 +413,9 @@ export default function OrderDetail() {
           Authorised Singnatory <br />
         </p>
       </div>
+      <button className="print-button" onClick={handlePrint}>
+        Print
+      </button>
     </>
   );
 }
