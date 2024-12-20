@@ -1,5 +1,6 @@
 import { useLoaderData } from "@remix-run/react";
 import prisma from "../db.server";
+import "../styles/invoice.css"
 
 export const loader = async ({ params, request }) => {
   let accessToken;
