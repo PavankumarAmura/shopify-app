@@ -1,6 +1,8 @@
 import { useLoaderData } from "@remix-run/react";
+import { useEffect, useState } from "react";
 import prisma from "../db.server";
-import "../styles/invoice.css"
+import "../styles/invoice.css";
+import { createGraphQLClient } from "@shopify/graphql-client";
 
 export const loader = async ({ params, request }) => {
   let accessToken;
@@ -15,15 +17,16 @@ export const loader = async ({ params, request }) => {
       throw new Error(`Access token not found for shop: GA4`);
     }
     accessToken = session.accessToken;
-    console.log(accessToken);
+    //console.log(accessToken);
   } catch (error) {
     console.error("Error fetching access token:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
   }
+
   const order_id = params.id;
-  const url = `https://ga4-setup.myshopify.com/admin/api/2023-10/orders/${order_id}.json`;
+  const url = `https://ga4-setup.myshopify.com/admin/api/2024-04/orders/${order_id}.json`;
 
   const response = await fetch(url, {
     method: "GET",
@@ -38,7 +41,7 @@ export const loader = async ({ params, request }) => {
   }
 
   const data = await response.json();
-  console.log(data);
+  //console.log(data);
   return { order: data.order, accessToken };
 };
 
@@ -60,17 +63,56 @@ export default function OrderDetail() {
     return total_tax;
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const client = createGraphQLClient({
+    url: "https://ga4-setup.myshopify.com/admin/api/2024-04/graphql.json",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Shopify-Access-Token": accessToken,
+    },
+    retries: 1,
+  });
+
+  const getHSN = async (id) => {
+    console.log(id);
+    const productQuery = `
+      query MyQuery {
+        productVariant(id: "gid://shopify/ProductVariant/${id}") {
+          harmonizedSystemCode
+        }
+      }
+    `;
+
+    const resData = await client.request(productQuery);
+    console.log(resData);
+    return resData?.data.productVariant.harmonizedSystemCode;
+  };
 
   // Function to generate table rows for line items
-  const generateLineItemRows = () => {
+  const generateLineItemRows = async () => {
+    const hsnData = await Promise.all(
+      res.line_items.map(async (item) => ({
+        id: item.variant_id,
+        hsn: await getHSN(item.variant_id),
+      })),
+    );
+
     return res.line_items.map((item, index) => {
       const item_discount = item.discount_allocations[0]?.amount || 0;
+
+      const hsn =
+        hsnData.find((data) => data.id === item.variant_id)?.hsn || "NA";
+
+      console.log(hsn);
 
       return (
         <tr key={index}>
           <td>{index + 1}</td>
           <td>{item.title}</td>
-          <td>HSN</td>
+          <td>{hsn}</td>
           <td>{item.price}</td>
           <td>{item.quantity}</td>
           <td>
@@ -155,12 +197,26 @@ export default function OrderDetail() {
     return res.total_price;
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const [rowHTML, setRowHTML] = useState(null);
+  useEffect(() => {
+    
+    const fetchData = async () => {
+      const rows = await generateLineItemRows(); // Wait for rows to be generated
+      setRowHTML(rows); // Update state once data is ready
+      console.log(rows);
+    };
 
-  if (!res) {
-    return <SkeletonPage title="Loading..." />;
+    if (res) {
+      fetchData(); // Trigger the async function
+    }
+  }, [res]);
+
+  if (!rowHTML) {
+    return (
+      <div>
+        <img className="loading-img" src="/loading.gif" alt="loading" />
+      </div>
+    );
   }
 
   return (
@@ -179,18 +235,16 @@ export default function OrderDetail() {
       <table>
         <tbody>
           <tr>
-            <td style={{ fontSize: "14px", fontWeight: 700 }}>
-              {process.env.CLIENT_NAME || "Pavan Store"}
-            </td>
+            <td style={{ fontSize: "14px", fontWeight: 700 }}>Store Name</td>
             <td style={{ direction: "rtl" }}>{formattedDate}</td>
           </tr>
           <tr>
             <td rowSpan="3">
-              {process.env.CLIENT_ADDRESS_LINE_1 || "Test 1"}
+              Test 1
               <br />
-              {process.env.CLIENT_ADDRESS_LINE_2 || "Test 2"}
+              Test 2
               <br />
-              {process.env.CLIENT_ADDRESS_LINE_3 || "Test 3"}
+              Test 3
               <br />
             </td>
           </tr>
@@ -257,7 +311,7 @@ export default function OrderDetail() {
             <th></th>
           </tr>
         </thead>
-        <tbody>{generateLineItemRows()}</tbody>
+        <tbody>{rowHTML}</tbody>
       </table>
       <h2
         style={{ fontSize: "10px", fontWeight: 700, margin: "20px 0 10px" }}
@@ -320,7 +374,7 @@ export default function OrderDetail() {
           {numWords(res.total_price)} only.
         </span>
       </h2> */}
-      <table class="billTable" style={{ marginTop: "20px" }}>
+      <table className="billTable" style={{ marginTop: "20px" }}>
         <thead>
           <tr>
             <th>
@@ -408,7 +462,7 @@ export default function OrderDetail() {
         <h2
           style={{ fontSize: "10px", fontWeight: 700, margin: "30px 0 10px" }}
         >
-          For {process.env.CLIENT_NAME || "Pavan Store"}
+          For Store Name
         </h2>
         <p style={{ fontSize: "8px", fontWeight: 400, margin: "40px 0 0" }}>
           Authorised Singnatory <br />
