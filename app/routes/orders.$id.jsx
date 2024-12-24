@@ -71,7 +71,7 @@ export default function OrderDetail() {
     url: "https://ga4-setup.myshopify.com/admin/api/2024-04/graphql.json",
     headers: {
       "Content-Type": "application/json",
-      "X-Shopify-Access-Token": accessToken,
+      "X-Shopify-Access-Token": `${accessToken}`,
     },
     retries: 1,
   });
