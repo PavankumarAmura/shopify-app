@@ -1,7 +1,6 @@
 import { useLoaderData } from "@remix-run/react";
-import { useEffect } from "react";
 import prisma from "../db.server";
-import "../styles/invoice.css";
+import "../styles/invoice.css"
 
 export const loader = async ({ params, request }) => {
   let accessToken;
@@ -16,7 +15,7 @@ export const loader = async ({ params, request }) => {
       throw new Error(`Access token not found for shop: GA4`);
     }
     accessToken = session.accessToken;
-    //console.log(accessToken);
+    console.log(accessToken);
   } catch (error) {
     console.error("Error fetching access token:", error);
     throw error;
@@ -39,7 +38,7 @@ export const loader = async ({ params, request }) => {
   }
 
   const data = await response.json();
-  //console.log(data);
+  console.log(data);
   return { order: data.order, accessToken };
 };
 
@@ -61,53 +60,6 @@ export default function OrderDetail() {
     return total_tax;
   };
 
-  const dataHSN = async (product) => {
-    const productData = product;
-    for (let i = 0; i < productData.length; i++) {
-      const hsn = await fetchGraphQL(productData[i].id);
-      console.log(hsn);
-    }
-  };
-
-  async function fetchGraphQL(id) {
-    const query = `
-  query {
-    productVariant(id: "gid://shopify/ProductVariant/${id}") {
-      harmonizedSystemCode
-    }
-  }
-`;
-    try {
-      const response = await fetch(
-        `https://ga4-setup.myshopify.com/admin/api/2024-04/graphql.json`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Shopify-Access-Token": accessToken,
-          },
-          body: JSON.stringify({ query }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Response Data:", data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  }
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  useEffect(() => {
-    dataHSN(res.line_items);
-  }, [res]);
 
   // Function to generate table rows for line items
   const generateLineItemRows = () => {
@@ -118,7 +70,7 @@ export default function OrderDetail() {
         <tr key={index}>
           <td>{index + 1}</td>
           <td>{item.title}</td>
-          <td>{item.id}</td>
+          <td>HSN</td>
           <td>{item.price}</td>
           <td>{item.quantity}</td>
           <td>
@@ -203,6 +155,10 @@ export default function OrderDetail() {
     return res.total_price;
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   if (!res) {
     return <SkeletonPage title="Loading..." />;
   }
@@ -223,16 +179,18 @@ export default function OrderDetail() {
       <table>
         <tbody>
           <tr>
-            <td style={{ fontSize: "14px", fontWeight: 700 }}>Store Name</td>
+            <td style={{ fontSize: "14px", fontWeight: 700 }}>
+              {process.env.CLIENT_NAME || "Pavan Store"}
+            </td>
             <td style={{ direction: "rtl" }}>{formattedDate}</td>
           </tr>
           <tr>
             <td rowSpan="3">
-              Test 1
+              {process.env.CLIENT_ADDRESS_LINE_1 || "Test 1"}
               <br />
-              Test 2
+              {process.env.CLIENT_ADDRESS_LINE_2 || "Test 2"}
               <br />
-              Test 3
+              {process.env.CLIENT_ADDRESS_LINE_3 || "Test 3"}
               <br />
             </td>
           </tr>
@@ -362,7 +320,7 @@ export default function OrderDetail() {
           {numWords(res.total_price)} only.
         </span>
       </h2> */}
-      <table className="billTable" style={{ marginTop: "20px" }}>
+      <table class="billTable" style={{ marginTop: "20px" }}>
         <thead>
           <tr>
             <th>
@@ -450,7 +408,7 @@ export default function OrderDetail() {
         <h2
           style={{ fontSize: "10px", fontWeight: 700, margin: "30px 0 10px" }}
         >
-          For Store Name
+          For {process.env.CLIENT_NAME || "Pavan Store"}
         </h2>
         <p style={{ fontSize: "8px", fontWeight: 400, margin: "40px 0 0" }}>
           Authorised Singnatory <br />
