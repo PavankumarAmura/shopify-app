@@ -42,11 +42,45 @@ export const loader = async ({ params, request }) => {
 
   const data = await response.json();
   //console.log(data);
-  return { order: data.order, accessToken };
+
+  const client = createGraphQLClient({
+    url: "https://ga4-setup.myshopify.com/admin/api/2023-01/graphql.json",
+    mode: 'no-cors',
+    headers: {
+      "Content-Type": "application/json",
+      "X-Shopify-Access-Token": `${accessToken}`,
+    },
+    retries: 2,
+  });
+
+  const getHSN = async (id) => {
+    console.log(id);
+    const productQuery = `
+      query MyQuery {
+        productVariant(id: "gid://shopify/ProductVariant/${id}") {
+          harmonizedSystemCode
+        }
+      }
+    `;
+
+    const resData = await client.request(productQuery);
+    //console.log(resData);
+    return resData?.data.productVariant.harmonizedSystemCode;
+  };
+
+  const hsnData = await Promise.all(
+    data.order.line_items.map(async (item) => ({
+      id: item.variant_id,
+      hsn: await getHSN(item.variant_id),
+    })),
+  );
+
+  return { order: data.order, hsn: hsnData, accessToken };
 };
 
 export default function OrderDetail() {
-  const { order, accessToken } = useLoaderData();
+  const { order, hsn, accessToken } = useLoaderData();
+  const hsnList = hsn;
   const res = order;
 
   const createdAt = res.created_at;
@@ -67,52 +101,23 @@ export default function OrderDetail() {
     window.print();
   };
 
-  const client = createGraphQLClient({
-    url: "https://ga4-setup.myshopify.com/admin/api/2024-04/graphql.json",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Access-Token": `${accessToken}`,
-    },
-    retries: 1,
-  });
-
-  const getHSN = async (id) => {
-    console.log(id);
-    const productQuery = `
-      query MyQuery {
-        productVariant(id: "gid://shopify/ProductVariant/${id}") {
-          harmonizedSystemCode
-        }
-      }
-    `;
-
-    const resData = await client.request(productQuery);
-    console.log(resData);
-    return resData?.data.productVariant.harmonizedSystemCode;
-  };
-
   // Function to generate table rows for line items
   const generateLineItemRows = async () => {
-    const hsnData = await Promise.all(
-      res.line_items.map(async (item) => ({
-        id: item.variant_id,
-        hsn: await getHSN(item.variant_id),
-      })),
-    );
 
     return res.line_items.map((item, index) => {
       const item_discount = item.discount_allocations[0]?.amount || 0;
 
-      const hsn =
-        hsnData.find((data) => data.id === item.variant_id)?.hsn || "NA";
+      const hsnNumber =  hsnList.find((product)=> {
+        return product.id == item.variant_id;
+      })
 
-      console.log(hsn);
+      console.log(hsnNumber);
 
       return (
         <tr key={index}>
           <td>{index + 1}</td>
           <td>{item.title}</td>
-          <td>{hsn}</td>
+          <td>{hsnNumber.hsn}</td>
           <td>{item.price}</td>
           <td>{item.quantity}</td>
           <td>
@@ -211,10 +216,11 @@ export default function OrderDetail() {
     }
   }, [res]);
 
-  if (!rowHTML) {
+  if (!res) {
     return (
       <div>
-        <img className="loading-img" src="/loading.gif" alt="loading" />
+        {/* <img className="loading-img" src="/loading.gif" alt="loading" /> */}
+        Loading....
       </div>
     );
   }
